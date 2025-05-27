@@ -35,8 +35,11 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # Logo
-logo = Image.open("logo_aleksandr.png")
-st.image(logo, use_container_width=True)
+try:
+    logo = Image.open("logo_aleksandr.png")
+    st.image(logo, use_container_width=True)
+except:
+    st.markdown("**[Logo no encontrado]**")
 
 st.title("Bienvenido a Aleksandr")
 st.subheader("Elige una categoría para aprender y divertirte")
@@ -59,11 +62,9 @@ with col2:
 
 # Preguntas por categoría
 preguntas_matematicas = [
-    ("5 + 3", 8), ("10 - 4", 6), ("6 + 7", 13),
-    ("9 - 2", 7), ("3 + 8", 11), ("7 + 6", 13),
-    ("10 - 5", 5), ("4 + 4", 8), ("12 - 3", 9),
-    ("15 + 6", 21), ("18 - 7", 11), ("9 + 9", 18),
-    ("20 - 10", 10), ("3 + 5", 8), ("14 - 9", 5)
+    ("5 + 3", 8), ("10 - 4", 6), ("6 + 7", 13), ("9 - 2", 7),
+    ("3 + 8", 11), ("7 + 6", 13), ("10 - 5", 5), ("4 + 4", 8),
+    ("12 - 3", 9), ("15 + 6", 21)
 ]
 
 preguntas_logica = [
@@ -71,23 +72,65 @@ preguntas_logica = [
     ("¿Cuál es el patrón? 2, 4, 6, ...", "8"),
     ("Completa: Sol, Luna, Estrella, ...", "cielo"),
     ("¿Qué sigue? Lunes, Martes, Miércoles, ...", "jueves"),
-    ("¿Cuál no pertenece? Carro, Bicicleta, Avión, Camisa", "camisa")
+    ("¿Cuál no pertenece? Carro, Bicicleta, Avión, Camisa", "camisa"),
+    ("¿Qué falta? A, B, C, ...", "D"),
+    ("Uno, Dos, Tres, ...", "cuatro"),
+    ("Manzana, Plátano, Fresa, Televisor", "televisor"),
+    ("Suma: 1+2+3", "6"),
+    ("Mitad de 10", "5")
+]
+
+preguntas_ahorro = [
+    ("Tienes 10 monedas. Compras un cuaderno por 4. ¿Cuánto te queda?", "6"),
+    ("Ahorras 3 cada día por 5 días. ¿Cuánto tienes?", "15"),
+    ("Tenías 20, gastas 5. ¿Saldo?", "15"),
+    ("Ahorro de 2 por 7 días. ¿Total?", "14"),
+    ("Gastas 3 de 9. ¿Restante?", "6"),
+    ("Compras 2 cosas de 4. Tienes 10. ¿Te queda?", "2"),
+    ("Tienes 8, ganas 4. ¿Total?", "12"),
+    ("Tenías 6, te dan 5. ¿Ahora?", "11"),
+    ("Ahorras 10, gastas 2. ¿Saldo?", "8"),
+    ("Tienes 12 y regalas 3. ¿Cuánto conservas?", "9")
+]
+
+preguntas_razonamiento = [
+    ("¿Qué harías si encuentras una cartera en el suelo?", "Buscar al dueño"),
+    ("Alguien necesita ayuda. ¿Qué haces?", "Ayudar"),
+    ("¿Qué es más correcto? Compartir o pelear", "Compartir"),
+    ("¿Cómo cuidarías el planeta?", "No tirar basura"),
+    ("¿Qué es más importante? Jugar o estudiar", "Estudiar"),
+    ("¿Qué harías si ves bullying?", "Pedir ayuda"),
+    ("Si un amigo está triste, tú...", "Lo animas"),
+    ("Si rompes algo, tú...", "Lo arreglas"),
+    ("¿Es correcto mentir?", "No"),
+    ("¿Debes respetar a los demás?", "Sí")
 ]
 
 # Mostrar preguntas según categoría
 if categoria == "matematicas":
     st.subheader("Ejercicios de Matemáticas")
-    pregunta, resultado = random.choice(preguntas_matematicas)
-    respuesta = st.text_input(f"{pregunta} = ?", key="math")
+    if "pregunta" not in st.session_state:
+        st.session_state.pregunta, st.session_state.resultado = random.choice(preguntas_matematicas)
+        st.session_state.comprobado = False
+
+    st.markdown(f"### {st.session_state.pregunta} = ?")
+    respuesta = st.text_input("Tu respuesta:", key="respuesta_mate")
 
     if st.button("Comprobar respuesta"):
         try:
-            if int(respuesta.strip()) == resultado:
+            if int(respuesta.strip()) == st.session_state.resultado:
                 st.success("¡Correcto!")
             else:
                 st.error("Respuesta incorrecta. Intenta otra vez.")
+            st.session_state.comprobado = True
         except:
             st.error("Escribe un número válido.")
+
+    if st.session_state.comprobado:
+        if st.button("Siguiente pregunta"):
+            st.session_state.pregunta, st.session_state.resultado = random.choice(preguntas_matematicas)
+            st.session_state.comprobado = False
+            st.experimental_rerun()
 
 elif categoria == "logica":
     st.subheader("Ejercicios de Lógica")
@@ -101,20 +144,20 @@ elif categoria == "logica":
 
 elif categoria == "ahorro":
     st.subheader("Ahorro e Inversiones")
-    st.write("Tienes 10 monedas. Compras un cuaderno que cuesta 4 monedas.")
-    respuesta = st.text_input("¿Cuánto dinero te queda?", key="ahorro")
+    pregunta, correcta = random.choice(preguntas_ahorro)
+    respuesta = st.text_input(pregunta, key="ahorro")
     if st.button("Verificar ahorro"):
-        if respuesta.strip() == "6":
+        if respuesta.strip() == correcta:
             st.success("¡Correcto!")
         else:
             st.error("Incorrecto. Revisa tus cuentas.")
 
 elif categoria == "razonamiento":
     st.subheader("Razonamiento")
-    opciones = ["Guardarla", "Buscar al dueño", "Ignorarla", "Tirarla"]
-    seleccion = st.radio("¿Qué harías si encuentras una cartera en el suelo?", opciones)
+    pregunta, correcta = random.choice(preguntas_razonamiento)
+    respuesta = st.text_input(pregunta, key="razonamiento")
     if st.button("Verificar razonamiento"):
-        if seleccion == "Buscar al dueño":
+        if respuesta.strip().lower() == correcta.lower():
             st.success("¡Muy buen razonamiento!")
         else:
-            st.error("Piensa en lo correcto.")
+            st.error("Piensa un poco más.")
