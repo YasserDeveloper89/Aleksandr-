@@ -1,22 +1,12 @@
-
 import streamlit as st
 from gtts import gTTS
-import pygame
-import os
 import tempfile
-
-# Inicializar pygame solo una vez
-pygame.mixer.init()
 
 def narrar(texto):
     tts = gTTS(text=texto, lang='es')
     with tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as fp:
         tts.save(fp.name)
-        pygame.mixer.music.load(fp.name)
-        pygame.mixer.music.play()
-        while pygame.mixer.music.get_busy():
-            pygame.time.Clock().tick(10)
-        os.unlink(fp.name)
+        st.audio(fp.name, format="audio/mp3")
 
 st.set_page_config(page_title="Aleksandr App", layout="wide", page_icon="🌟")
 
@@ -115,7 +105,7 @@ def main():
     bienvenida()
     opcion = st.sidebar.radio("¿Qué quieres aprender hoy?",
         ["Matemáticas", "Lógica", "Ahorro e Inversiones", "Pensar y Razonar", "Extras"])
-
+    
     if opcion == "Matemáticas":
         modulo_matematicas()
     elif opcion == "Lógica":
