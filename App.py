@@ -1,45 +1,70 @@
 import streamlit as st
 from gtts import gTTS
+import base64
 import os
-import random
 
-# Función para generar la voz
-def narrar(texto):
+# Configuración de la página
+st.set_page_config(page_title="Aleksandr App", page_icon="🧠", layout="centered")
+
+# Función para generar audio embebido
+def narrar(texto, filename="narracion.mp3"):
     tts = gTTS(text=texto, lang='es')
-    tts.save("narracion.mp3")
-    os.system("start narracion.mp3")  # Para Windows. Usa 'afplay' en Mac o 'mpg321' en Linux
+    tts.save(filename)
+    with open(filename, "rb") as f:
+        audio_bytes = f.read()
+        st.audio(audio_bytes, format='audio/mp3')
 
-# Función de bienvenida
+# Pantalla de bienvenida
 def bienvenida():
-    st.image("logo_aleksandr.png", width=300)  # El logo de Aleksandr
+    st.image("logo_aleksandr.png", width=300)
+    st.title("Bienvenido a Aleksandr")
+    st.subheader("Una app para mentes brillantes de 6 a 8 años")
     narrar("¡Hola! Soy Aleksandr, y te voy a ayudar a aprender cosas increíbles.")
-    st.title("Bienvenidos a la Aventura de Aleksandr")
-    st.write("¿Estás listo para comenzar? Vamos a aprender juntos.")
+    st.markdown("---")
 
-# Función de módulos interactivos
+# Menú de módulos
 def elegir_modulo():
-    st.write("¿Qué te gustaría aprender hoy?")
+    st.header("¿Qué te gustaría explorar hoy?")
     modulo = st.selectbox(
-        "Elige un módulo:",
-        ("Mente Brillante", "Corazón Fuerte", "Cuerpo Activo", "Fortaleza Interior", "Proyecto Personal")
+        "Elige un módulo para empezar:",
+        (
+            "Mente Brillante",
+            "Corazón Fuerte",
+            "Cuerpo Activo",
+            "Fortaleza Interior",
+            "Proyecto Personal"
+        )
     )
-    if modulo == "Mente Brillante":
-        st.write("Vamos a resolver un reto de lógica...")
-        narrar("Vamos a resolver un reto de lógica. ¿Estás listo?")
-    elif modulo == "Corazón Fuerte":
-        st.write("Hoy vamos a aprender sobre la paciencia...")
-        narrar("Hoy vamos a aprender sobre la paciencia.")
-    elif modulo == "Cuerpo Activo":
-        st.write("Hagamos una pequeña actividad física...")
-        narrar("Hagamos una pequeña actividad física para activar el cuerpo.")
-    elif modulo == "Fortaleza Interior":
-        st.write("Hoy vamos a reflexionar sobre la templanza...")
-        narrar("Hoy vamos a reflexionar sobre la templanza.")
-    elif modulo == "Proyecto Personal":
-        st.write("Es hora de planificar tu proyecto personal...")
-        narrar("Es hora de planificar tu proyecto personal.")
 
-# Configuración de Streamlit
+    if modulo == "Mente Brillante":
+        st.subheader("Reto de lógica:")
+        st.write("Si tienes 2 manzanas y te dan 3 más, ¿cuántas tienes?")
+        narrar("Si tienes dos manzanas y te dan tres más, ¿cuántas tienes en total?")
+
+    elif modulo == "Corazón Fuerte":
+        st.subheader("Hoy practicamos la paciencia.")
+        st.write("Respira profundamente tres veces. ¿Cómo te sientes?")
+        narrar("Respira profundo tres veces. ¿Cómo te sientes ahora? Más tranquilo, ¿verdad?")
+
+    elif modulo == "Cuerpo Activo":
+        st.subheader("Mini ejercicio:")
+        st.write("Levántate y estírate como un gato. ¡Cuenta hasta 10!")
+        narrar("Levántate, estírate como un gato, y cuenta hasta diez conmigo. Uno, dos...")
+
+    elif modulo == "Fortaleza Interior":
+        st.subheader("Frase sabia de Aleksandr:")
+        frase = "No puedes controlar lo que pasa, pero sí cómo reaccionas."
+        st.info(frase)
+        narrar(frase)
+
+    elif modulo == "Proyecto Personal":
+        st.subheader("Crea tu Mini Misión del Mes")
+        idea = st.text_input("¿Qué proyecto te gustaría hacer este mes?")
+        if idea:
+            st.success(f"¡Gran idea! Aleksandr está emocionado por tu proyecto: {idea}")
+            narrar(f"¡Gran idea! Aleksandr está emocionado por tu proyecto: {idea}")
+
+# Ejecutar la app
 def main():
     bienvenida()
     elegir_modulo()
