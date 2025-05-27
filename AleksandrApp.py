@@ -2,21 +2,18 @@ import streamlit as st
 import random
 from PIL import Image
 
-# Configurar la página
+# Configuración de la página
 st.set_page_config(page_title="Aleksandr - Aprende Jugando", layout="centered")
 
 # Cargar y mostrar el logo
 logo = Image.open("logo_aleksandr.png")
 st.image(logo, use_column_width=False, width=180)
 
-# Fondo y estilo
+# Estilo visual masculino e infantil
 st.markdown("""
     <style>
-        body {
-            background-color: #D6EAF8;
-        }
-        .main {
-            background-color: #D6EAF8;
+        body, .main {
+            background-color: #AED6F1;
         }
         .stButton>button {
             background-color: #3498DB;
@@ -41,38 +38,42 @@ def matematicas():
     st.subheader("Matemáticas")
     a, b = random.randint(1, 10), random.randint(1, 10)
     operador = st.radio("Elige una operación", ["Suma", "Resta"])
+    
     if operador == "Suma":
         correcto = a + b
-        respuesta = st.number_input(f"¿Cuánto es {a} + {b}?", step=1)
+        respuesta = st.number_input(f"¿Cuánto es {a} + {b}?", step=1, format="%d", key="suma")
     else:
+        if a < b:
+            a, b = b, a  # evitar resultados negativos
         correcto = a - b
-        respuesta = st.number_input(f"¿Cuánto es {a} - {b}?", step=1)
-    if st.button("Comprobar"):
-        if respuesta == correcto:
+        respuesta = st.number_input(f"¿Cuánto es {a} - {b}?", step=1, format="%d", key="resta")
+
+    if st.button("Comprobar resultado"):
+        if int(respuesta) == correcto:
             st.success("¡Muy bien!")
         else:
             st.error(f"Intenta otra vez. La respuesta correcta era {correcto}")
 
 def logica():
     st.subheader("Lógica")
-    st.write("¿Qué viene después?")
-    secuencia = [2, 4, 6, 8]
-    respuesta = st.number_input(f"2, 4, 6, 8, ?", step=1)
+    st.write("¿Qué número viene después en la secuencia?")
+    st.write("2, 4, 6, 8, ?")
+    respuesta = st.number_input("Tu respuesta:", step=1, format="%d", key="logica")
     if st.button("Verificar lógica"):
-        if respuesta == 10:
+        if int(respuesta) == 10:
             st.success("¡Correcto!")
         else:
-            st.error("Casi, piensa en los pares.")
+            st.error("Casi, piensa en los números pares.")
 
 def ahorro():
     st.subheader("Ahorro e Inversiones")
-    st.write("Tienes 10 monedas y quieres comprar un juguete que vale 7.")
-    respuesta = st.number_input("¿Cuánto te sobra después de comprarlo?", step=1)
+    st.write("Tienes 10 monedas y compras un juguete que cuesta 7.")
+    respuesta = st.number_input("¿Cuánto te queda?", step=1, format="%d", key="ahorro")
     if st.button("Comprobar ahorro"):
-        if respuesta == 3:
-            st.success("¡Eso es! Sabes administrar el dinero.")
+        if int(respuesta) == 3:
+            st.success("¡Eso es! Sabes ahorrar.")
         else:
-            st.error("Revisa bien la resta.")
+            st.error("Revisa la resta: 10 - 7.")
 
 def pensamiento():
     st.subheader("Pensamiento y Razonamiento")
@@ -82,9 +83,9 @@ def pensamiento():
         if respuesta.strip().lower() == "oeste":
             st.success("¡Muy bien pensado!")
         else:
-            st.error("Pista: piensa en el lado contrario.")
+            st.error("Pista: es el lado contrario al este.")
 
-# Mostrar la categoría seleccionada
+# Mostrar la sección según selección
 if seleccion == "Matemáticas":
     matematicas()
 elif seleccion == "Lógica":
