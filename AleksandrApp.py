@@ -1,42 +1,122 @@
-import streamlit as st import random from PIL import Image
+import streamlit as st
+import random
+from PIL import Image
 
 st.set_page_config(page_title="Aleksandr App", layout="centered")
 
---- Logo ---
+# Cargar logo
+logo = Image.open("logo_aleksandr.png")
+st.image(logo, use_container_width=True)
 
-st.image("logo_aleksandr.png", use_container_width=True)
+st.markdown("<h1 style='text-align: center; color: #2b5fa0;'>Bienvenido a Aleksandr</h1>", unsafe_allow_html=True)
+st.markdown("<h4 style='text-align: center; color: #444;'>Una app educativa interactiva para niños superdotados</h4>", unsafe_allow_html=True)
 
-st.markdown(""" <h1 style='text-align: center; color: #1f4e79;'>¡Bienvenido a Aleksandr!</h1> <p style='text-align: center; font-size: 20px;'>Una app educativa interactiva para niños con talento y visión de futuro.</p> """, unsafe_allow_html=True)
+# Menú principal
+menu = st.sidebar.selectbox("Selecciona una materia", ["Inicio", "Matemáticas", "Lógica", "Ahorro e Inversiones", "Pensamiento y Razonamiento"])
 
---- Estilo con CSS ---
+if menu == "Inicio":
+    st.write("Elige una materia en el menú para comenzar a estudiar.")
+    st.success("¡Vamos a aprender cosas increíbles!")
 
-st.markdown(""" <style> .main { background-color: #f0f6ff; } h2 { color: #2c3e50; } .block-container { padding-top: 2rem; padding-bottom: 2rem; } </style> """, unsafe_allow_html=True)
-
---- Navegación de menú ---
-
-menu = st.selectbox("Elige una categoría para comenzar a aprender:", [ "Matemáticas", "Lógica", "Ahorro e Inversiones", "Razonamiento Práctico" ])
-
---- Funciones para ejercicios ---
-
-def mostrar_operacion(tipo): if "pregunta" not in st.session_state: if tipo == "+": a, b = random.randint(1, 50), random.randint(1, 50) st.session_state.pregunta = f"¿Cuánto es {a} + {b}?" st.session_state.respuesta = a + b elif tipo == "-": a, b = random.randint(20, 70), random.randint(1, 20) st.session_state.pregunta = f"¿Cuánto es {a} - {b}?" st.session_state.respuesta = a - b
-
-st.subheader(st.session_state.pregunta)
-user_answer = st.number_input("Tu respuesta:", step=1, format="%d")
-if st.button("Responder"):
-    if user_answer == st.session_state.respuesta:
-        st.success("¡Correcto!")
+# -------------------- MATEMÁTICAS --------------------
+elif menu == "Matemáticas":
+    st.header("Ejercicios de Matemáticas")
+    operations = ['+', '-']
+    
+    if "math_question" not in st.session_state:
+        a = random.randint(1, 20)
+        b = random.randint(1, 20)
+        op = random.choice(operations)
+        st.session_state.math_question = (a, b, op)
+    
+    a, b, op = st.session_state.math_question
+    if op == '+':
+        result = a + b
     else:
-        st.error("Incorrecto. ¡Sigue intentando!")
-    del st.session_state.pregunta
-    del st.session_state.respuesta
+        result = a - b
+    
+    st.write(f"¿Cuánto es {a} {op} {b}?")
+    user_answer = st.number_input("Tu respuesta:", step=1)
+    
+    if st.button("Comprobar"):
+        if user_answer == result:
+            st.success("¡Correcto! Muy bien.")
+        else:
+            st.error(f"Incorrecto. La respuesta era {result}")
+        del st.session_state.math_question
 
---- Contenido por categoría ---
+# -------------------- LÓGICA --------------------
+elif menu == "Lógica":
+    st.header("Ejercicios de Lógica")
+    preguntas = [
+        ("¿Qué número sigue en la secuencia? 2, 4, 6, 8, ...", "10"),
+        ("Si ayer fue lunes, ¿qué día es mañana?", "miércoles"),
+        ("¿Cuántos lados tiene un triángulo?", "3"),
+        ("¿Qué pesa más, 1kg de plomo o 1kg de algodón?", "iguales"),
+        ("¿Cuál es la mitad de 10?", "5"),
+        ("Si tienes 3 manzanas y comes 2, ¿cuántas quedan?", "1"),
+        ("¿Qué letra sigue: A, C, E, G, ...?", "I"),
+        ("¿Cuántos meses tienen 28 días?", "12"),
+        ("Si un tren va a 100 km/h, ¿cuántos km recorrerá en 2 horas?", "200"),
+        ("¿Cuál es el opuesto de noche?", "día")
+    ]
+    
+    if "logic_q" not in st.session_state:
+        st.session_state.logic_q = random.choice(preguntas)
+    
+    q, correct = st.session_state.logic_q
+    st.write(q)
+    answer = st.text_input("Tu respuesta:")
+    
+    if st.button("Comprobar"):
+        if answer.strip().lower() == correct.lower():
+            st.success("¡Correcto!")
+        else:
+            st.error(f"Incorrecto. La respuesta era: {correct}")
+        del st.session_state.logic_q
 
-if menu == "Matemáticas": st.header("Ejercicios de Matemáticas") operacion = st.radio("Elige el tipo de operación:", ["Suma", "Resta"]) if operacion == "Suma": mostrar_operacion("+") else: mostrar_operacion("-")
+# -------------------- AHORRO E INVERSIONES --------------------
+elif menu == "Ahorro e Inversiones":
+    st.header("Conceptos Básicos de Ahorro")
+    conceptos = [
+        ("¿Qué es ahorrar?", "Guardar parte del dinero para el futuro."),
+        ("¿Por qué es importante ahorrar?", "Para estar preparados ante emergencias."),
+        ("¿Qué es una alcancía?", "Un lugar donde se guarda dinero."),
+        ("¿Qué es una inversión?", "Poner dinero para que crezca con el tiempo."),
+        ("¿Cuál es mejor, gastar todo o ahorrar una parte?", "Ahorrar una parte."),
+        ("¿Qué es un banco?", "Lugar donde puedes guardar dinero seguro."),
+        ("¿Qué significa presupuesto?", "Plan para gastar el dinero."),
+        ("¿Qué es una meta de ahorro?", "Un objetivo que quieres alcanzar con tus ahorros."),
+        ("¿Debes gastar todo tu dinero en dulces?", "No, debes ahorrar una parte."),
+        ("¿Cómo puedes ganar dinero?", "Ayudando en casa, vendiendo algo o trabajando.")
+    ]
+    
+    if "ahorro_q" not in st.session_state:
+        st.session_state.ahorro_q = random.choice(conceptos)
+    
+    pregunta, respuesta = st.session_state.ahorro_q
+    st.write(pregunta)
+    respuesta_usuario = st.text_area("Tu respuesta:")
+    
+    if st.button("Verificar"):
+        st.info(f"Una buena respuesta sería: {respuesta}")
+        del st.session_state.ahorro_q
 
-elif menu == "Lógica": st.header("Ejercicios de Lógica") ejercicios = [ ("¿Qué número sigue en la secuencia: 2, 4, 6, ?", 8), ("¿Qué figura tiene 4 lados iguales?", "cuadrado"), ("¿Cuál es el opuesto de 'noche'?", "día"), ("¿Cuántos días hay en una semana?", 7), ("¿Cuál es el primer mes del año?", "enero"), ("¿Qué animal dice 'miau'?", "gato"), ("¿Qué color resulta de mezclar rojo y azul?", "morado"), ("¿Cuánto es 10 dividido por 2?", 5), ("¿Qué sentido usamos para oír?", "oído"), ("¿Cuál es el opuesto de arriba?", "abajo") ] pregunta, respuesta = random.choice(ejercicios) st.subheader(pregunta) user_input = st.text_input("Tu respuesta:").lower() if st.button("Responder"): if str(respuesta) == user_input: st.success("¡Muy bien!") else: st.error("Respuesta incorrecta, intenta otra vez.")
-
-elif menu == "Ahorro e Inversiones": st.header("Aprende sobre Ahorro e Inversiones") conceptos = [ ("¿Qué es ahorrar?", "guardar dinero para el futuro"), ("¿Dónde podemos guardar nuestro dinero de forma segura?", "banco"), ("¿Qué es una hucha?", "una caja para ahorrar dinero"), ("¿Qué significa invertir?", "usar dinero para ganar más dinero"), ("¿Por qué es importante el ahorro?", "para emergencias o metas futuras"), ("¿Qué es un presupuesto?", "plan para gastar el dinero"), ("¿Debemos gastar todo lo que ganamos?", "no"), ("¿Qué es un ingreso?", "dinero que recibimos"), ("¿Qué es un gasto?", "dinero que usamos"), ("¿Por qué es bueno tener metas de ahorro?", "para comprar cosas importantes") ] pregunta, respuesta = random.choice(conceptos) st.subheader(pregunta) user_input = st.text_input("Tu respuesta:").lower() if st.button("Enviar Respuesta"): if respuesta in user_input: st.success("¡Correcto!") else: st.error("No es la respuesta correcta, sigue aprendiendo.")
-
-elif menu == "Razonamiento Práctico": st.header("Ejercicios de Razonamiento Práctico") retos = [ ("Si tienes 3 manzanas y te dan 2 más, ¿cuántas tienes en total?", 5), ("Tienes 10 caramelos y das 4, ¿cuántos te quedan?", 6), ("Vas a la tienda con 10 euros y compras algo que cuesta 7, ¿cuánto te queda?", 3), ("Si ves 5 pájaros en un árbol y 2 vuelan, ¿cuántos quedan?", 3), ("Si caminas 3 pasos hacia adelante y luego 2 hacia atrás, ¿cuántos pasos avanzaste?", 1), ("Tienes 8 lápices y pierdes 3, ¿cuántos tienes ahora?", 5), ("Si estudias 2 horas al día durante 5 días, ¿cuántas horas estudiaste?", 10), ("Si compras 2 juguetes por 5 euros cada uno, ¿cuánto gastaste?", 10), ("Si ahorras 1 euro cada día durante 7 días, ¿cuánto tienes?", 7), ("Si tienes 12 globos y se revientan 4, ¿cuántos te quedan?", 8) ] pregunta, respuesta = random.choice(retos) st.subheader(pregunta) user_input = st.number_input("Tu respuesta:", step=1) if st.button("Comprobar"): if int(user_input) == respuesta: st.success("¡Excelente trabajo!") else: st.error("Ups, no es correcto. ¡Intenta otra vez!")
-
+# -------------------- PENSAMIENTO Y RAZONAMIENTO --------------------
+elif menu == "Pensamiento y Razonamiento":
+    st.header("Ejercicios para Pensar Mejor")
+    ejercicios = [
+        "Imagina que tienes que construir una casa con bloques. ¿Qué harías primero?",
+        "Si un amigo está triste, ¿cómo puedes ayudarlo?",
+        "Si tienes 5 juguetes y regalas 2, ¿cuántos te quedan?",
+        "Si llueve, ¿qué necesitas para no mojarte?",
+        "¿Cómo resolverías un problema si no tienes todas las piezas?",
+        "¿Qué harías si ves un billete en la calle?",
+        "Si tienes dos caminos para llegar a casa, ¿cómo eliges el mejor?",
+        "¿Por qué es bueno preguntar cuando no sabes algo?",
+        "Si tienes sueño pero aún no es hora de dormir, ¿qué haces?",
+        "¿Por qué es importante escuchar a los demás?"
+    ]
+    
+    st.write(random.choice(ejercicios))
+    st.text_area("Tu reflexión:")
