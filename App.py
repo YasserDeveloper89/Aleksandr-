@@ -1,4 +1,6 @@
-import streamlit as st import pyttsx3
+import streamlit 
+
+as st import pyttsx3
 
 Configurar pyttsx3
 
