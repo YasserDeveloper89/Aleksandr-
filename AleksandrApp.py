@@ -1,137 +1,95 @@
 import streamlit as st
-from gtts import gTTS
-import tempfile
+import random
+from PIL import Image
 
-# Función de narración
-def narrar(texto):
-    tts = gTTS(text=texto, lang='es')
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as fp:
-        tts.save(fp.name)
-        st.audio(fp.name, format="audio/mp3")
+# Configurar la página
+st.set_page_config(page_title="Aleksandr - Aprende Jugando", layout="centered")
 
-# Configuración de la app
-st.set_page_config(page_title="Aleksandr App", layout="wide", page_icon="🧠")
+# Cargar y mostrar el logo
+logo = Image.open("logo_aleksandr.png")
+st.image(logo, use_column_width=False, width=180)
 
-# Fondo azul claro y estilo infantil
+# Fondo y estilo
 st.markdown("""
     <style>
-        .stApp {
-            background: linear-gradient(to right, #D0E6F6, #A2D4F1);
-            font-family: 'Comic Sans MS', cursive;
+        body {
+            background-color: #D6EAF8;
         }
-        h1, h2, h3 {
-            color: #0A1F44;
+        .main {
+            background-color: #D6EAF8;
         }
         .stButton>button {
-            background-color: #1E90FF;
+            background-color: #3498DB;
             color: white;
-            border-radius: 12px;
-            height: 3em;
-            width: 100%;
-            font-weight: bold;
+            font-size: 20px;
+            border-radius: 10px;
+            padding: 10px 20px;
         }
     </style>
 """, unsafe_allow_html=True)
 
-# Logo y bienvenida
-st.image("https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/2048px-User_icon_2.svg.png", width=100)
-st.title("Bienvenido a Aleksandr")
-st.subheader("Donde los pequeños genios aprenden jugando")
-narrar("Hola. Soy Aleksandr. Vamos a aprender jugando.")
+# Título
+st.markdown("<h1 style='text-align: center; color: #2C3E50;'>Bienvenido a Aleksandr</h1>", unsafe_allow_html=True)
+st.markdown("<h4 style='text-align: center;'>Donde los pequeños genios aprenden jugando</h4>", unsafe_allow_html=True)
 
-# Menú lateral
-opcion = st.sidebar.radio("Elige una categoría para comenzar:",
-    ["", "Matemáticas", "Lógica", "Ahorro e Inversiones", "Pensar y Razonar", "Frase del día"])
+# Menú de categorías
+opciones = ["Selecciona una categoría", "Matemáticas", "Lógica", "Ahorro e Inversiones", "Pensamiento y Razonamiento"]
+seleccion = st.selectbox("¿Qué quieres estudiar hoy?", opciones)
 
-# Módulos de ejercicios
-def modulo_matematicas():
-    st.header("Matemáticas Divertidas")
-    preguntas = [
-        ("5 + 3 =", 8),
-        ("10 - 4 =", 6),
-        ("7 + 6 =", 13),
-        ("9 - 2 =", 7),
-        ("4 + 9 =", 13),
-        ("6 + 2 =", 8),
-        ("3 + 3 =", 6)
-    ]
-    for i, (pregunta, respuesta) in enumerate(preguntas):
-        r = st.number_input(pregunta, step=1, format="%d", key=f"mat_{i}")
-        if st.button(f"Comprobar {pregunta}", key=f"btnmat_{i}"):
-            if r == respuesta:
-                st.success("¡Correcto!")
-                narrar("¡Correcto!")
-            else:
-                st.error("Intenta otra vez.")
-                narrar("Intenta otra vez.")
+# Funciones por categoría
+def matematicas():
+    st.subheader("Matemáticas")
+    a, b = random.randint(1, 10), random.randint(1, 10)
+    operador = st.radio("Elige una operación", ["Suma", "Resta"])
+    if operador == "Suma":
+        correcto = a + b
+        respuesta = st.number_input(f"¿Cuánto es {a} + {b}?", step=1)
+    else:
+        correcto = a - b
+        respuesta = st.number_input(f"¿Cuánto es {a} - {b}?", step=1)
+    if st.button("Comprobar"):
+        if respuesta == correcto:
+            st.success("¡Muy bien!")
+        else:
+            st.error(f"Intenta otra vez. La respuesta correcta era {correcto}")
 
-def modulo_logica():
-    st.header("Desafíos de Lógica")
-    ejercicios = [
-        ("¿Qué número sigue? 2, 4, 6, 8, ...", 10),
-        ("¿Qué número sigue? 5, 10, 15, 20, ...", 25),
-        ("¿Qué número sigue? 1, 3, 6, 10, ...", 15)
-    ]
-    for i, (pregunta, respuesta) in enumerate(ejercicios):
-        r = st.number_input(pregunta, step=1, format="%d", key=f"log_{i}")
-        if st.button(f"Verificar {pregunta}", key=f"btnlog_{i}"):
-            if r == respuesta:
-                st.success("¡Muy bien!")
-                narrar("¡Muy bien!")
-            else:
-                st.error("Observa el patrón.")
-                narrar("Observa el patrón.")
+def logica():
+    st.subheader("Lógica")
+    st.write("¿Qué viene después?")
+    secuencia = [2, 4, 6, 8]
+    respuesta = st.number_input(f"2, 4, 6, 8, ?", step=1)
+    if st.button("Verificar lógica"):
+        if respuesta == 10:
+            st.success("¡Correcto!")
+        else:
+            st.error("Casi, piensa en los pares.")
 
-def modulo_ahorro():
-    st.header("Ahorro e Inversiones")
-    ejercicios = [
-        ("Si tienes 10 monedas y ahorras 2 por día, ¿cuánto tendrás en 5 días?", 20),
-        ("Si guardas 3 monedas al día durante 4 días, ¿cuántas tienes?", 12)
-    ]
-    for i, (pregunta, respuesta) in enumerate(ejercicios):
-        r = st.number_input(pregunta, step=1, format="%d", key=f"ah_{i}")
-        if st.button(f"Comprobar {pregunta}", key=f"btnah_{i}"):
-            if r == respuesta:
-                st.success("¡Perfecto!")
-                narrar("¡Perfecto!")
-            else:
-                st.error("No es correcto.")
-                narrar("No es correcto.")
+def ahorro():
+    st.subheader("Ahorro e Inversiones")
+    st.write("Tienes 10 monedas y quieres comprar un juguete que vale 7.")
+    respuesta = st.number_input("¿Cuánto te sobra después de comprarlo?", step=1)
+    if st.button("Comprobar ahorro"):
+        if respuesta == 3:
+            st.success("¡Eso es! Sabes administrar el dinero.")
+        else:
+            st.error("Revisa bien la resta.")
 
-def modulo_razonar():
-    st.header("Piensa y Razona")
-    preguntas = [
-        ("¿Qué harías si un amigo está triste?", 
-         ["Lo ignoro", "Le doy un abrazo", "Le digo que se vaya"], 
-         "Le doy un abrazo"),
-        ("Si ves basura en el suelo, ¿qué haces?",
-         ["La recojo", "La pateo", "No es mi problema"],
-         "La recojo")
-    ]
-    for i, (texto, opciones, correcta) in enumerate(preguntas):
-        r = st.radio(texto, opciones, key=f"raz_{i}")
-        if st.button(f"Responder {texto}", key=f"btnraz_{i}"):
-            if r == correcta:
-                st.success("¡Muy bien pensado!")
-                narrar("¡Muy bien pensado!")
-            else:
-                st.error("Piénsalo otra vez.")
-                narrar("Piénsalo otra vez.")
+def pensamiento():
+    st.subheader("Pensamiento y Razonamiento")
+    pregunta = "Si el sol sale por el este, ¿por dónde se pone?"
+    respuesta = st.text_input(pregunta)
+    if st.button("Verificar respuesta"):
+        if respuesta.strip().lower() == "oeste":
+            st.success("¡Muy bien pensado!")
+        else:
+            st.error("Pista: piensa en el lado contrario.")
 
-def modulo_extras():
-    st.header("Frase del día")
-    frase = "No importa lo pequeño que seas, puedes hacer cosas grandes."
-    st.info(frase)
-    narrar(frase)
-
-# Ejecutar el módulo elegido
-if opcion == "Matemáticas":
-    modulo_matematicas()
-elif opcion == "Lógica":
-    modulo_logica()
-elif opcion == "Ahorro e Inversiones":
-    modulo_ahorro()
-elif opcion == "Pensar y Razonar":
-    modulo_razonar()
-elif opcion == "Frase del día":
-    modulo_extras()
+# Mostrar la categoría seleccionada
+if seleccion == "Matemáticas":
+    matematicas()
+elif seleccion == "Lógica":
+    logica()
+elif seleccion == "Ahorro e Inversiones":
+    ahorro()
+elif seleccion == "Pensamiento y Razonamiento":
+    pensamiento()
