@@ -7,7 +7,7 @@ st.set_page_config(page_title="Aleksandr - Aprende Jugando", layout="centered")
 
 # Cargar y mostrar el logo
 logo = Image.open("logo_aleksandr.png")
-st.image(logo, use_column_width=False, width=180)
+st.image(logo, use_container_width=False, width=180)
 
 # Estilo visual masculino e infantil
 st.markdown("""
@@ -44,7 +44,7 @@ def matematicas():
         respuesta = st.number_input(f"¿Cuánto es {a} + {b}?", step=1, format="%d", key="suma")
     else:
         if a < b:
-            a, b = b, a  # evitar resultados negativos
+            a, b = b, a
         correcto = a - b
         respuesta = st.number_input(f"¿Cuánto es {a} - {b}?", step=1, format="%d", key="resta")
 
